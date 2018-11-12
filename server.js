@@ -5,6 +5,9 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+const baseURL = "https://maker.ifttt.com/trigger/";
+const withKey = "/with/key/";
+
 // Get the Id from IFTTT Maker URL
 if(!process.env.IFTTT_MAKER_URL)
   console.log("You need to set your IFTTT Maker URL - copy the URL from https://ifttt.com/services/maker/settings into the .env file against 'IFTTT_MAKER_URL'");
@@ -15,21 +18,21 @@ else
 app.use(express.static('views'));
 
 // Handle requests from IFTTT
-app.post("/", function (request, response) {
+app.post("/", function (req, response) {
   console.log("Request received from IFTTT");
-  console.log("Data: " + JSON.stringify(request.body));
+  console.log("Data: " + JSON.stringify(req.body));
 
   const form = {};
-  form.value1 = request.body.task.text;
-  form.value2 = request.body.task.type;
-  form.value3 = request.body.task.text;
+  form.value1 = req.body.task.text;
+  form.value2 = req.body.task.type;
+  form.value3 = req.body.task.text;
 
 
-  if (process.env.GLITCH_APP_KEY === request.body.key) {
+  if (process.env.GLITCH_APP_KEY === req.body.key) {
     console.log("Calling IFTTT.");
     // addHabiticaToDo(request.body.title);
     // Make a request to baseURL + triggerEvent + withKey + iftttId, which is the complete IFTTT Maker Request URL
-    request.post({url: baseURL + triggerEvent + withKey + iftttId, form: form}, function (error, response, body) {
+    request.post({url: baseURL + "habitica_event" + withKey + iftttId, form: form}, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         console.log(body); // Show the response from IFTTT
       }
