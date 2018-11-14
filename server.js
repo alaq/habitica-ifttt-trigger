@@ -7,6 +7,7 @@ app.use(bodyParser.json());
 
 const baseURL = "https://maker.ifttt.com/trigger/";
 const withKey = "/with/key/";
+let iftttId;
 
 // Get the Id from IFTTT Maker URL
 if(!process.env.IFTTT_MAKER_URL)
@@ -22,6 +23,8 @@ app.post("/", function (req, response) {
   console.log("Request received from IFTTT");
   console.log("Data: " + JSON.stringify(req.body));
 
+  if (req.body.task.type === "habit") return; // we do nothing for habits
+  
   const form = {};
   form.value1 = req.body.task.text;
   form.value2 = req.body.task.type;
@@ -30,7 +33,6 @@ app.post("/", function (req, response) {
 
   if (process.env.GLITCH_APP_KEY === req.body.key) {
     console.log("Calling IFTTT.");
-    // addHabiticaToDo(request.body.title);
     // Make a request to baseURL + triggerEvent + withKey + iftttId, which is the complete IFTTT Maker Request URL
     request.post({url: baseURL + "habitica_event" + withKey + iftttId, form: form}, function (error, response, body) {
       if (!error && response.statusCode == 200) {
